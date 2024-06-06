@@ -1,0 +1,604 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_trustedServer",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "CannotPurchaseZero",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_ticketPrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_maxEntries",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_numWinners",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_duration",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_maxTickets",
+				"type": "uint32"
+			},
+			{
+				"internalType": "bool",
+				"name": "_allowDuplicates",
+				"type": "bool"
+			}
+		],
+		"name": "createRaffle",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "ECDSAInvalidSignature",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "length",
+				"type": "uint256"
+			}
+		],
+		"name": "ECDSAInvalidSignatureLength",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "s",
+				"type": "bytes32"
+			}
+		],
+		"name": "ECDSAInvalidSignatureS",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_numEntriesLeft",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_maxNumEntries",
+				"type": "uint32"
+			}
+		],
+		"name": "ExceedsPersonalTicketLimit",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_numTicketsLeft",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_numTicketsAvailable",
+				"type": "uint32"
+			}
+		],
+		"name": "ExceedsTotalTicketLimit",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "InsufficientFundsProvided",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "InvalidSignature",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_numEntries",
+				"type": "uint32"
+			}
+		],
+		"name": "purchaseTicket",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			}
+		],
+		"name": "RaffleDoesNotExist",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "RaffleEnded",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "RaffleHasNotEnded",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			},
+			{
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			}
+		],
+		"name": "WinnerDidNotEnterRaffle",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "raffleId",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "participant",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "numEntries",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "totalTickets",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "participantTickets",
+				"type": "uint32"
+			}
+		],
+		"name": "PurchasedRaffleTickets",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "raffleId",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "ticketPrice",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "allowDuplicates",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "maxTickets",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "maxEntries",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "numWinners",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "duration",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "started",
+				"type": "uint32"
+			}
+		],
+		"name": "RaffleCreated",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			},
+			{
+				"internalType": "address[]",
+				"name": "_winners",
+				"type": "address[]"
+			},
+			{
+				"internalType": "bytes",
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "recordWinners",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "raffleId",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "address[]",
+				"name": "winners",
+				"type": "address[]"
+			}
+		],
+		"name": "WinnersSelected",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "enteredRaffles",
+		"outputs": [
+			{
+				"internalType": "uint32",
+				"name": "",
+				"type": "uint32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			}
+		],
+		"name": "getParticipantsAndTickets",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint32[]",
+				"name": "",
+				"type": "uint32[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			},
+			{
+				"internalType": "address",
+				"name": "_participant",
+				"type": "address"
+			}
+		],
+		"name": "getParticipantTickets",
+		"outputs": [
+			{
+				"internalType": "uint32",
+				"name": "",
+				"type": "uint32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			}
+		],
+		"name": "getRaffle",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint32",
+						"name": "id",
+						"type": "uint32"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ticketPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "allowDuplicates",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint32",
+						"name": "maxTickets",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "maxEntries",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "numWinners",
+						"type": "uint32"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint32",
+						"name": "duration",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "started",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "totalTickets",
+						"type": "uint32"
+					}
+				],
+				"internalType": "struct GomuOnChainRaffle.RaffleDataMinimal",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_raffleId",
+				"type": "uint32"
+			}
+		],
+		"name": "getRaffleWinners",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "ownedRaffles",
+		"outputs": [
+			{
+				"internalType": "uint32",
+				"name": "",
+				"type": "uint32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "trustedServer",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
