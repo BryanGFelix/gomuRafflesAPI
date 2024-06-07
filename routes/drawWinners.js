@@ -24,10 +24,10 @@ router.post('/', async (req, res) => {
         const messageBytes = ethers.getBytes(messageHash);
 
         wallet.signMessage(messageBytes).then(async(signature) => {
-            const resultData = await contract.recordWinners(body.id, winners, signature).catch((err) => {
+            contract.recordWinners(body.id, winners, signature).catch((err) => {
                 return res.status(500).json({success: false, error: err});
             }); 
-            res.status(200).json({ winners, transactionHash: 'test' });
+            res.status(200).json({ winners});
         });
         
         
