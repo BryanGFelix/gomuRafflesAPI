@@ -5,14 +5,20 @@ import cors from 'cors';
 import getRaffle from './routes/getRaffle.js';
 import getOwnedRaffles from './routes/getOwnedRaffles.js';
 import getJoinedRaffles from './routes/getJoinedRaffles.js';
-import drawWinners from './routes/drawWinners.js';
-import createRaffle from './routes/createRaffle.js';
+import getWinners from './routes/getWinners.js';
+import sendTransaction from './routes/sendTransaction.js';
+import updateTransaction from './routes/updateTransaction.js';
 import initializePurchasedRaffleTicketsListener from './listeners/purchasedRaffleTickets.js';
+import initializeCreateRaffleListener from './listeners/createRaffle.js';
 import {contract} from './utils.js';
+import startDrawWinnersCronJobs from './cron/drawWinners.js';
+import createPool from './db.js';
 
 dotenv.config();
 
 const app = express();
+createPool();
+
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3000' }));
 
@@ -23,16 +29,19 @@ const initContractListeners = () => {
   listenersInitialized = true;
 
   initializePurchasedRaffleTicketsListener(contract);
+  initializeCreateRaffleListener(contract);
 };
 
 // Initialize contract event listener
 initContractListeners();
+startDrawWinnersCronJobs();
   
 app.use('/api/getRaffle', getRaffle);
 app.use('/api/getOwnedRaffles', getOwnedRaffles);
 app.use('/api/getJoinedRaffles', getJoinedRaffles);
-app.use('/api/drawWinners', drawWinners);
-app.use('/api/createRaffle', createRaffle);
+app.use('/api/getWinners', getWinners);
+app.use('/api/sendTransaction', sendTransaction);
+app.use('/api/updateTransaction', updateTransaction);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

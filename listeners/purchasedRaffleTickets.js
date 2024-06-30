@@ -1,51 +1,41 @@
-import connection from "../db.js";
+import createPool from "../db.js";
+import { ethers } from 'ethers';
 
 const initializePurchasedRaffleTicketsListener = (contract) => {
-    contract.on('PurchasedRaffleTickets', async (raffleID, address, numEntries, totalTickets, participantTickets) => {
+    const pool = createPool();
+    contract.on('PurchasedRaffleTickets', async (raffleID, address, numEntries, totalTickets, participantTickets, totalTicketValue, event) => {
+        const ticketPriceInEth = ethers.formatEther(totalTicketValue); 
         try {
             // Check if the participant already exists in the raffle
-            const participant = await new Promise((resolve, reject) => {
-            connection.query(
+            const [participantResults] = await pool.query(
                 'SELECT * FROM participants WHERE address = ? AND raffleID = ?',
-                [address, raffleID],
-                (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results[0]);
-                }
+                [address, raffleID]
             );
-            });
 
-            if (participant) {
+            if (participantResults.length > 0) {
                 // If the participant exists, update the number of tickets
-                await new Promise((resolve, reject) => {
-                    connection.query(
+                await pool.query(
                     'UPDATE participants SET numTickets = ? WHERE id = ?',
-                    [participantTickets, participant.id],
-                    (err, results) => {
-                        if (err) {
-                        return reject(err);
-                        }
-                        resolve(results);
-                    }
-                    );
-                });
+                    [Number(participantTickets), participantResults[0].id]
+                );
             } else {
                 // If the participant does not exist, insert a new record
-                await new Promise((resolve, reject) => {
-                    connection.query(
+                await pool.query(
                     'INSERT INTO participants (address, numTickets, raffleID) VALUES (?, ?, ?)',
-                    [address, participantTickets, raffleID],
-                    (err, results) => {
-                        if (err) {
-                        return reject(err);
-                        }
-                        resolve(results);
-                    }
-                    );
-                });
+                    [address, Number(participantTickets), raffleID],
+                );
             }
+
+            const transactionHash = event.log.transactionHash;
+
+            // Update the transaction status to confirmed in the transactions table
+            await pool.query(`
+                INSERT INTO transactions (hash, type, status, updatedAt, raffleID, address, amount)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE
+                        status = VALUES(status),
+                        updatedAt = VALUES(updatedAt);
+                `, [transactionHash, 'purchase_ticket', 'confirmed', Date.now(), raffleID, address, ticketPriceInEth]);
         } catch (error) {
             console.error('Error purchasing tickets:', error);
         }

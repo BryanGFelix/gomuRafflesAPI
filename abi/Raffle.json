@@ -2,6 +2,32 @@
 	{
 		"inputs": [
 			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			}
+		],
+		"name": "cancelRaffle",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			}
+		],
+		"name": "collectRefund",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "_trustedServer",
 				"type": "address"
@@ -17,6 +43,11 @@
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			},
 			{
 				"internalType": "uint256",
 				"name": "_ticketPrice",
@@ -113,6 +144,17 @@
 		"type": "error"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "availableFunds",
+				"type": "uint256"
+			}
+		],
+		"name": "InsufficientFundsForWithdrawal",
+		"type": "error"
+	},
+	{
 		"inputs": [],
 		"name": "InsufficientFundsProvided",
 		"type": "error"
@@ -120,6 +162,33 @@
 	{
 		"inputs": [],
 		"name": "InvalidSignature",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "NoTicketsUnableToRefund",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "NotRaffleOwner",
 		"type": "error"
 	},
 	{
@@ -147,9 +216,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			},
 			{
 				"internalType": "uint32",
@@ -165,9 +234,20 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
+			}
+		],
+		"name": "RaffleAlreadyExists",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
 			}
 		],
 		"name": "RaffleDoesNotExist",
@@ -186,13 +266,46 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
+			}
+		],
+		"name": "RaffleWasFree",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			}
+		],
+		"name": "RaffleWasNotCancelled",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "RefundAlreadyCollected",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
 			},
 			{
 				"internalType": "address",
-				"name": "winner",
+				"name": "_winner",
 				"type": "address"
 			}
 		],
@@ -223,9 +336,9 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			},
 			{
 				"indexed": false,
@@ -250,6 +363,12 @@
 				"internalType": "uint32",
 				"name": "participantTickets",
 				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalTicketValue",
+				"type": "uint256"
 			}
 		],
 		"name": "PurchasedRaffleTickets",
@@ -260,9 +379,34 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "raffleId",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "ended",
 				"type": "uint32"
+			}
+		],
+		"name": "RaffleCancelled",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bytes16",
+				"name": "raffleId",
+				"type": "bytes16"
 			},
 			{
 				"indexed": false,
@@ -302,12 +446,6 @@
 			},
 			{
 				"indexed": false,
-				"internalType": "bool",
-				"name": "isActive",
-				"type": "bool"
-			},
-			{
-				"indexed": false,
 				"internalType": "uint32",
 				"name": "duration",
 				"type": "uint32"
@@ -325,9 +463,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			},
 			{
 				"internalType": "address[]",
@@ -344,6 +482,31 @@
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bytes16",
+				"name": "raffleId",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "participant",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "RefundIssued",
+		"type": "event"
 	},
 	{
 		"inputs": [],
@@ -370,50 +533,64 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			},
 			{
 				"indexed": false,
 				"internalType": "address[]",
 				"name": "winners",
 				"type": "address[]"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "ended",
+				"type": "uint32"
 			}
 		],
 		"name": "WinnersSelected",
 		"type": "event"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
 				"internalType": "address",
-				"name": "",
+				"name": "to",
 				"type": "address"
 			},
 			{
+				"indexed": false,
 				"internalType": "uint256",
-				"name": "",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "enteredRaffles",
-		"outputs": [
+		"name": "Withdrawal",
+		"type": "event"
+	},
+	{
+		"inputs": [
 			{
-				"internalType": "uint32",
-				"name": "",
-				"type": "uint32"
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "withdrawFees",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			}
 		],
 		"name": "getParticipantsAndTickets",
@@ -435,9 +612,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			},
 			{
 				"internalType": "address",
@@ -459,9 +636,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			}
 		],
 		"name": "getRaffle",
@@ -469,9 +646,9 @@
 			{
 				"components": [
 					{
-						"internalType": "uint32",
+						"internalType": "bytes16",
 						"name": "id",
-						"type": "uint32"
+						"type": "bytes16"
 					},
 					{
 						"internalType": "address",
@@ -535,9 +712,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "bytes16",
 				"name": "_raffleId",
-				"type": "uint32"
+				"type": "bytes16"
 			}
 		],
 		"name": "getRaffleWinners",
@@ -552,19 +729,27 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
-		"name": "ownedRaffles",
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "",
+				"type": "bytes16"
+			}
+		],
+		"name": "rafflesMap",
 		"outputs": [
 			{
 				"internalType": "uint32",
@@ -577,12 +762,12 @@
 	},
 	{
 		"inputs": [],
-		"name": "owner",
+		"name": "totalReservedFunds",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "uint256",
 				"name": "",
-				"type": "address"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

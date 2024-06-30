@@ -1,22 +1,25 @@
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const connection = mysql.createConnection({
-  host: process.env.AWS_RDS_ENDPOINT,
-  user: process.env.AWS_USERNAME,
-  password: process.env.AWS_PASSWORD,
-  database: process.env.AWS_DB,
-  port: process.env.AWS_PORT
-});
+let pool;
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.stack);
-    return;
+const createPool = () => {
+  if (!pool) {
+    pool = mysql.createPool({
+      host: process.env.AWS_RDS_ENDPOINT,
+      user: process.env.AWS_USERNAME,
+      password: process.env.AWS_PASSWORD,
+      database: process.env.AWS_DB,
+      port: process.env.AWS_PORT,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
+    });
+    console.log('Connection pool created');
   }
-  console.log('Connected to the database as id', connection.threadId);
-});
+  return pool;
+}
 
-export default connection;
+export default createPool;
