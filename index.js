@@ -19,9 +19,6 @@ import createPool from './db.js';
 dotenv.config();
 
 const app = express();
-createPool();
-
-app.use(express.json());
 
 const allowedOrigins = ['gomuraffles.com', 'www.gomuraffles.com', 'gomuraffles.vercel.app'];
 
@@ -36,6 +33,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.options('*', cors(corsOptions));
+
+createPool();
 
 let listenersInitialized = false;
 
