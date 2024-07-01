@@ -2,11 +2,14 @@ import createPool from '../db.js';
 import { ethers } from 'ethers';
 
 const initializeCreateRaffleListener = (contract) => {
+    console.log('Initializing CreateRaffle listener');
     const pool = createPool();
+
     contract.on('RaffleCreated', async (raffleID, owner, ticketPrice, allowDuplicates, maxTickets, maxEntries, numWinners, duration, timeStarted, event) => {
-        console.log('CREATING RAFFLE') ;
-        const ticketPriceInEth = ethers.formatEther(ticketPrice);  
-          try {
+        console.log('CREATING RAFFLE');
+        
+        const ticketPriceInEth = ethers.formatEther(ticketPrice);
+        try {
             // Check if the raffle already exists in the database to ensure idempotency
             await pool.query(
                 `INSERT INTO raffles (
@@ -48,14 +51,21 @@ const initializeCreateRaffleListener = (contract) => {
                         updatedAt = VALUES(updatedAt);
                 `, [transactionHash, 'create_raffle', 'confirmed', Date.now(), raffleID, owner]);
 
-          } catch (error) {
+        } catch (error) {
             console.error('Error creating raffle:', error);
-          }
+        }
 
+    }).on('connected', (subscriptionId) => {
+        console.log('CreateRaffle listener connected:', subscriptionId);
+    }).on('data', (event) => {
+        console.log('CreateRaffle event data:', event);
+    }).on('changed', (event) => {
+        console.log('CreateRaffle event changed:', event);
+    }).on('error', (error) => {
+        console.error('CreateRaffle listener error:', error);
     });
-  
+
     console.log('CreateRaffle listener initialized');
-  };
-  
-  export default initializeCreateRaffleListener;
-  
+};
+
+export default initializeCreateRaffleListener;
