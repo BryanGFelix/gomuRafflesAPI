@@ -10,6 +10,8 @@ import sendTransaction from './routes/sendTransaction.js';
 import updateTransaction from './routes/updateTransaction.js';
 import initializePurchasedRaffleTicketsListener from './listeners/purchasedRaffleTickets.js';
 import initializeCreateRaffleListener from './listeners/createRaffle.js';
+import initializeRefundTicketsListener from './listeners/refundTickets.js';
+import initializeCancelRaffleListener from './listeners/cancelRaffle.js';
 import {contract} from './utils.js';
 import startDrawWinnersCronJobs from './cron/drawWinners.js';
 import createPool from './db.js';
@@ -30,6 +32,8 @@ const initContractListeners = () => {
 
   initializePurchasedRaffleTicketsListener(contract);
   initializeCreateRaffleListener(contract);
+  initializeRefundTicketsListener(contract);
+  initializeCancelRaffleListener(contract);
 };
 
 // Initialize contract event listener

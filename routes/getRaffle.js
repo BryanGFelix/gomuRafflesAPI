@@ -28,7 +28,8 @@ router.post('/', async (req, res) => {
           r.timeStarted,
           r.wasCancelled,
           IFNULL(SUM(p.numTickets), 0) AS totalTickets,
-          IFNULL(SUM(CASE WHEN p.address = ? THEN p.numTickets ELSE 0 END), 0) AS userTickets
+          IFNULL(SUM(CASE WHEN p.address = ? THEN p.numTickets ELSE 0 END), 0) AS userTickets,
+          IFNULL(MAX(CASE WHEN p.address = ? THEN p.refunded ELSE NULL END), 0) AS refunded
       `;
       
       let params = [user, id];
@@ -41,7 +42,7 @@ router.post('/', async (req, res) => {
             WHERE w.raffleID = r.id AND w.address = ?
           ) AS numWins
         `;
-        params = [user, user, id];
+        params = [user, user, user, id];
       }
 
       query += `

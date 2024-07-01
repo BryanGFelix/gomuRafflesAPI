@@ -37,38 +37,39 @@ const drawWinnersForRaffle = async (raffles) => {
 
                 // Select winners using the alias method
                 const winners = selectWinners(ticketData[0], ticketData[1], numWinners, allowDuplicates);
+                if (winners.length > 0) {
+                    // Get message in bytes
+                    const abiCoder = new ethers.AbiCoder();
+                    const encodedAbi = abiCoder.encode(["bytes16", "address[]"], [raffleID, winners]);
+                    const messageHash = ethers.keccak256(encodedAbi);
+                    const messageBytes = ethers.getBytes(messageHash);
 
-                // Get message in bytes
-                const abiCoder = new ethers.AbiCoder();
-                const encodedAbi = abiCoder.encode(["bytes16", "address[]"], [raffleID, winners]);
-                const messageHash = ethers.keccak256(encodedAbi);
-                const messageBytes = ethers.getBytes(messageHash);
+                    const signature = await wallet.signMessage(messageBytes);
+                    const transactionResponse = await contract.recordWinners(raffleID, winners, signature);
 
-                const signature = await wallet.signMessage(messageBytes);
-                const transactionResponse = await contract.recordWinners(raffleID, winners, signature);
+                    // Wait for the transaction to be confirmed
+                    const receipt = await provider.waitForTransaction(transactionResponse.hash);
 
-                // Wait for the transaction to be confirmed
-                const receipt = await provider.waitForTransaction(transactionResponse.hash);
+                    if (receipt.status === 1) {
+                        console.log('Transaction confirmed:', receipt.transactionHash);
 
-                if (receipt.status === 1) {
-                    console.log('Transaction confirmed:', receipt.transactionHash);
+                        try {
+                            // Insert winners into the database
+                            const query = 'INSERT INTO winners (address, raffleID) VALUES (?, ?)';
+                            console.log(winners);
+                            const values = winners.map(winner => [winner, raffleID]);
 
-                    try {
-                        // Insert winners into the database
-                        const query = 'INSERT INTO winners (address, raffleID) VALUES (?, ?)';
-                        console.log(winners);
-                        const values = winners.map(winner => [winner, raffleID]);
+                            await pool.query(query, [values]);
 
-                        await pool.query(query, [values]);
-
-                        // Update the raffle end time and status in the database
-                        const updateQuery = 'UPDATE raffles SET timeEnded = ?, isActive = ? WHERE id = ?';
-                        await pool.query(updateQuery, [ended, false, raffleID]);
-                    } catch (dbError) {
-                        console.error('Error updating database:', dbError);
+                            // Update the raffle end time and status in the database
+                            const updateQuery = 'UPDATE raffles SET timeEnded = ?, isActive = ? WHERE id = ?';
+                            await pool.query(updateQuery, [ended, false, raffleID]);
+                        } catch (dbError) {
+                            console.error('Error updating database:', dbError);
+                        }
+                    } else {
+                        console.log('Transaction failed:', receipt.transactionHash);
                     }
-                } else {
-                    console.log('Transaction failed:', receipt.transactionHash);
                 }
             }
         } catch (error) {

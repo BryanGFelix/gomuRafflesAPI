@@ -28,22 +28,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_trustedServer",
-				"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [],
-		"name": "CannotPurchaseZero",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "bytes16",
 				"name": "_raffleId",
 				"type": "bytes16"
@@ -83,6 +67,22 @@
 		"outputs": [],
 		"stateMutability": "payable",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_trustedServer",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "CannotPurchaseZero",
+		"type": "error"
 	},
 	{
 		"inputs": [],
@@ -239,6 +239,17 @@
 				"type": "bytes16"
 			}
 		],
+		"name": "RaffleAlreadyCancelled",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			}
+		],
 		"name": "RaffleAlreadyExists",
 		"type": "error"
 	},
@@ -254,7 +265,13 @@
 		"type": "error"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "bytes16",
+				"name": "_raffleId",
+				"type": "bytes16"
+			}
+		],
 		"name": "RaffleEnded",
 		"type": "error"
 	},
