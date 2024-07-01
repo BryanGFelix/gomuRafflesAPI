@@ -22,7 +22,20 @@ const app = express();
 createPool();
 
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' }));
+
+const allowedOrigins = ['gomuraffles.com', 'www.gomuraffles.com', 'gomuraffles.vercel.app'];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
 
 let listenersInitialized = false;
 
