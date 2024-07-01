@@ -46,7 +46,7 @@ let listenersInitialized = false;
 const initContractListeners = () => {
   if (listenersInitialized) return;
   listenersInitialized = true;
-
+  console.log('HERE INITIALIZING');
   initializePurchasedRaffleTicketsListener(contract);
   initializeCreateRaffleListener(contract);
   initializeRefundTicketsListener(contract);
