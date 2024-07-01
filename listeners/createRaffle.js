@@ -3,7 +3,8 @@ import { ethers } from 'ethers';
 
 const initializeCreateRaffleListener = (contract) => {
     const pool = createPool();
-    contract.on('RaffleCreated', async (raffleID, owner, ticketPrice, allowDuplicates, maxTickets, maxEntries, numWinners, duration, timeStarted, event) => { 
+    contract.on('RaffleCreated', async (raffleID, owner, ticketPrice, allowDuplicates, maxTickets, maxEntries, numWinners, duration, timeStarted, event) => {
+        console.log('CREATING RAFFLE') ;
         const ticketPriceInEth = ethers.formatEther(ticketPrice);  
           try {
             // Check if the raffle already exists in the database to ensure idempotency
@@ -35,7 +36,7 @@ const initializeCreateRaffleListener = (contract) => {
                     new Date(),
                     timeStarted,
                 ]);
-
+            console.log('CREATED');
             const transactionHash = event.log.transactionHash;
 
             // Update the transaction status to confirmed in the transactions table
