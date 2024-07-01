@@ -20,6 +20,8 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+
 const allowedOrigins = ['https://www.gomuraffles.com', 'https://www.gomuraffles.com', 'https://gomuraffles.vercel.app'];
 
 const corsOptions = {
