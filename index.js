@@ -20,7 +20,7 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = ['https://www.gomuraffles.com/', 'https://www.gomuraffles.com', 'https://gomuraffles.vercel.app'];
+const allowedOrigins = ['https://www.gomuraffles.com', 'https://www.gomuraffles.com', 'https://gomuraffles.vercel.app'];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -29,7 +29,8 @@ const corsOptions = {
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  optionsSuccessStatus: 204 // For legacy browser support
 };
 
 app.use(cors(corsOptions));
