@@ -3,6 +3,11 @@ import { ethers } from 'ethers';
 
 const initializeCreateRaffleListener = (contract) => {
     const pool = createPool();
+
+    contract.once('RaffleCreated', () => {
+        console.log('CreateRaffle listener connected');
+    });
+
     contract.on('RaffleCreated', async (raffleID, owner, ticketPrice, allowDuplicates, maxTickets, maxEntries, numWinners, duration, timeStarted, event) => {
         console.log('CREATING RAFFLE') ;
         const ticketPriceInEth = ethers.formatEther(ticketPrice);  
