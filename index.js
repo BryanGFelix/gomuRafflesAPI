@@ -20,7 +20,7 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = ['gomuraffles.com', 'www.gomuraffles.com', 'gomuraffles.vercel.app'];
+const allowedOrigins = ['https://www.gomuraffles.com/', 'https://www.gomuraffles.com', 'https://gomuraffles.vercel.app'];
 
 const corsOptions = {
   origin: function (origin, callback) {
