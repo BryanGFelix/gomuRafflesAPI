@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 
 const drawWinnersForRaffle = async (raffles) => {
     const pool = createPool();
-
+    console.log('IN HERE');
     for (const raffle of raffles) {
         const raffleID = raffle.id;
         try {
@@ -90,7 +90,7 @@ const drawWinners = async () => {
             FROM raffles
             WHERE isActive = 1 AND ? > timeStarted
         `, [currentTimeInSecond]);
-    
+        console.log('ATTEMPTED TO GET EXPIRED RAFFLES');
         if(expiredRaffles.length > 0) {
             drawWinnersForRaffle(expiredRaffles[0]);
         }
