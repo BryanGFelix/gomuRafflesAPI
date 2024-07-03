@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
           IFNULL(MAX(CASE WHEN p.address = ? THEN p.refunded ELSE NULL END), 0) AS refunded
       `;
       
-      let params = [user, id];
+      let params = [user, user];
 
       if (user) {
         query += `,
@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
             WHERE w.raffleID = r.id AND w.address = ?
           ) AS numWins
         `;
-        params = [user, user, user, id];
+        params.push(user);
       }
 
       query += `
@@ -55,9 +55,10 @@ router.post('/', async (req, res) => {
         GROUP BY
           r.id;
       `;
+
+      params.push(id);
   
       const raffleData = await pool.query(query, params);
-      console.log('RAFFLE DATA', raffleData);
 
       return res.status(200).json(raffleData[0][0]);
     } catch (error) {
