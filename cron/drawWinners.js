@@ -55,8 +55,8 @@ const drawWinnersForRaffle = async (raffles) => {
 
                         try {
                             // Insert winners into the database
-                            const query = 'INSERT INTO winners (address, raffleID) VALUES (?, ?)';
-                            console.log(winners);
+                            const query = 'INSERT INTO winners (address, raffleID) VALUES ?';
+                        
                             const values = winners.map(winner => [winner, raffleID]);
 
                             await pool.query(query, [values]);
