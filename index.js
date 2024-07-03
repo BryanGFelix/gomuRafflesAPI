@@ -22,11 +22,22 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = ['https://www.gomuraffles.com', 'https://www.gomuraffles.com', 'https://gomuraffles.vercel.app'];
+const allowedOrigins = ['https://www.gomuraffles.com', 'https://gomuraffles.vercel.app', /\.gomuraffles\.com$/];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      return callback(null, true);
+    }
+
+    // Check if the origin matches any of the allowed origins
+    if (allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return allowedOrigin === origin;
+      }
+      return allowedOrigin.test(origin);
+    })) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -46,7 +57,6 @@ let listenersInitialized = false;
 const initContractListeners = () => {
   if (listenersInitialized) return;
   listenersInitialized = true;
-  console.log('HERE INITIALIZING');
   initializePurchasedRaffleTicketsListener(contract);
   initializeCreateRaffleListener(contract);
   initializeRefundTicketsListener(contract);
