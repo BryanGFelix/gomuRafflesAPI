@@ -50,6 +50,8 @@ router.post('/', async (req, res) => {
             [owner, PAGE_SIZE, offset],
         );
 
+        console.log('OWNED RAFFLES', ownedRaffles);
+
         // Count total number of raffles for the owner
         const [[{ total }]] = await pool.query(
             `
@@ -62,6 +64,8 @@ router.post('/', async (req, res) => {
             `,
             [owner]
         );
+
+        console.log('TOTAL', total);
 
         return res.status(200).json({
             page,
